@@ -1,9 +1,9 @@
 # ──────────────────────────────────────────────────────────────────────────────
 #  Zeta - PHP Obfuscator Tool
 #  Style   : Zeta-Obfuscator-Tool (BenzoXdev)
-#  Moteur  : yakpro-po (pmdunggh fork) via subprocess PHP
-#  Fallback: moteur Python natif si PHP absent
-#  Deps    : colorama uniquement  (pip install colorama)
+#  Engine  : yakpro-po (pmdunggh fork) via PHP subprocess
+#  Fallback: native Python engine if PHP is missing
+#  Deps    : colorama only (pip install colorama)
 # ──────────────────────────────────────────────────────────────────────────────
 
 import sys
@@ -34,12 +34,12 @@ telegram      = 't.me/benzoXdev'
 instagram     = 'instagram.com/just._.amar_x1'
 by            = 'BenzoXdev'
 
-# Chemin yakpro-po (fork pmdunggh, présent dans yakpro-po/)
+# yakpro-po path (pmdunggh fork, present in yakpro-po/)
 YAKPRO_PHP    = os.path.join(_BASE_DIR, 'yakpro-po', 'yakpro-po.php')
 YAKPRO_CNF    = os.path.join(_BASE_DIR, 'yakpro-po', 'yakpro-po.cnf')
 
 # ═══════════════════════════════════════════════════════════════════════════════
-#  COULEURS & PREFIXES  (style Zeta-Obfuscator-Tool)
+#  COLORS & PREFIXES  (Zeta-Obfuscator-Tool style)
 # ═══════════════════════════════════════════════════════════════════════════════
 _c     = colorama.Fore
 red    = _c.RED
@@ -84,10 +84,10 @@ def Clear():
     os.system('cls' if sys.platform.startswith('win') else 'clear')
 
 # ═══════════════════════════════════════════════════════════════════════════════
-#  DETECTION PHP + YAKPRO
+#  PHP + YAKPRO DETECTION
 # ═══════════════════════════════════════════════════════════════════════════════
 def _check_php():
-    """Vérifie que PHP est disponible dans le PATH."""
+    """Checks if PHP is available in PATH."""
     try:
         r = subprocess.run(['php', '--version'], capture_output=True, timeout=5)
         return r.returncode == 0
@@ -95,14 +95,14 @@ def _check_php():
         return False
 
 def _check_yakpro(path):
-    """Vérifie que yakpro-po.php existe à l'emplacement donné."""
+    """Checks if yakpro-po.php exists at the given path."""
     return os.path.isfile(path)
 
 # ═══════════════════════════════════════════════════════════════════════════════
-#  SELECTION FICHIERS / DOSSIER  (tkinter + fallback manuel)
+#  FILE / FOLDER SELECTION  (tkinter + manual fallback)
 # ═══════════════════════════════════════════════════════════════════════════════
 def ChoosePHPFiles():
-    print(f'{ts()} {INPUT} Choisissez un ou plusieurs fichiers PHP -> {reset}')
+    print(f'{ts()} {INPUT} Choose one or multiple PHP files -> {reset}')
     chosen = []
     try:
         root = tk.Tk()
@@ -110,62 +110,62 @@ def ChoosePHPFiles():
         root.attributes('-topmost', True)
         php_files = filedialog.askopenfilenames(
             parent=root,
-            title='Zeta - PHP Obfuscator | Choisir fichier(s) PHP',
-            filetypes=[('Fichiers PHP', '*.php'), ('Tous', '*.*')]
+            title='Zeta - PHP Obfuscator | Choose PHP file(s)',
+            filetypes=[('PHP Files', '*.php'), ('All Files', '*.*')]
         )
         if php_files:
             chosen = list(php_files)
             for p in chosen:
-                print(f'{ts()} {ADD} Fichier choisi : {white}{p}{reset}')
+                print(f'{ts()} {ADD} Chosen file: {white}{p}{reset}')
             return chosen
     except Exception:
         pass
-    print(f'{ts()} {INFO} Aucun fichier selectionne via fenetre.')
+    print(f'{ts()} {INFO} No file selected via window.')
     try:
-        rep = input(f'{ts()} {INPUT} Chemin(s) (separes par virgules) -> {reset}').strip()
+        rep = input(f'{ts()} {INPUT} Path(s) (separated by commas) -> {reset}').strip()
     except KeyboardInterrupt:
         print()
         return []
     if rep:
         chosen = [x.strip() for x in rep.split(',') if x.strip()]
         for p in chosen:
-            print(f'{ts()} {ADD} Fichier saisi : {white}{p}{reset}')
+            print(f'{ts()} {ADD} Entered file: {white}{p}{reset}')
     return chosen
 
 def ChoosePHPDirectory():
-    print(f'{ts()} {INPUT} Choisissez un dossier de projet PHP -> {reset}')
+    print(f'{ts()} {INPUT} Choose a PHP project folder -> {reset}')
     try:
         root = tk.Tk()
         root.withdraw()
         root.attributes('-topmost', True)
         directory = filedialog.askdirectory(
             parent=root,
-            title='Zeta - PHP Obfuscator | Choisir dossier PHP'
+            title='Zeta - PHP Obfuscator | Choose PHP folder'
         )
         if directory:
-            print(f'{ts()} {ADD} Dossier choisi : {white}{directory}{reset}')
+            print(f'{ts()} {ADD} Chosen folder: {white}{directory}{reset}')
             return directory
     except Exception:
         pass
-    print(f'{ts()} {INFO} Aucun dossier selectionne via fenetre.')
+    print(f'{ts()} {INFO} No folder selected via window.')
     try:
-        rep = input(f'{ts()} {INPUT} Chemin du dossier -> {reset}').strip()
+        rep = input(f'{ts()} {INPUT} Folder path -> {reset}').strip()
     except KeyboardInterrupt:
         print()
         return ''
     if rep:
-        print(f'{ts()} {ADD} Dossier saisi : {white}{rep}{reset}')
+        print(f'{ts()} {ADD} Entered folder: {white}{rep}{reset}')
     return rep
 
 # ═══════════════════════════════════════════════════════════════════════════════
-#  CONFIG CNF PAR NIVEAU (yakpro-po)
+#  CONFIG CNF PER LEVEL (yakpro-po)
 # ═══════════════════════════════════════════════════════════════════════════════
 def _write_level_cnf(level, cnf_path):
     """
-    Génère un fichier .cnf temporaire adapté au niveau d'obfuscation.
-    Basé sur la config yakpro-po.cnf du fork pmdunggh.
+    Generates a temporary .cnf file adapted to the obfuscation level.
+    Based on yakpro-po.cnf config from the pmdunggh fork.
     """
-    # Options communes à tous les niveaux
+    # Common options for all levels
     base = {
         'parser_mode'        : "'PREFER_PHP7'",
         'scramble_mode'      : "'hexa'",
@@ -190,23 +190,23 @@ def _write_level_cnf(level, cnf_path):
         'scramble_length'           : '8',
     }
 
-    # Niveau 1 — base (commentaires + indentation strip seulement)
+    # Level 1 — base (comments + indentation strip only)
     if level == 1:
-        pass  # tout false
+        pass  # all false
 
-    # Niveau 2 — + strings + variables
+    # Level 2 — + strings + variables
     elif level == 2:
         base['obfuscate_string_literal'] = 'true'
         base['obfuscate_variable_name']  = 'true'
 
-    # Niveau 3 — + fonctions + constantes
+    # Level 3 — + functions + constants
     elif level == 3:
         base['obfuscate_string_literal'] = 'true'
         base['obfuscate_variable_name']  = 'true'
         base['obfuscate_function_name']  = 'true'
         base['obfuscate_constant_name']  = 'true'
 
-    # Niveau 4 — + classes + méthodes + propriétés
+    # Level 4 — + classes + methods + properties
     elif level >= 4:
         base['obfuscate_string_literal']  = 'true'
         base['obfuscate_variable_name']   = 'true'
@@ -234,10 +234,10 @@ def _write_level_cnf(level, cnf_path):
         f.write('\n'.join(lines))
 
 # ═══════════════════════════════════════════════════════════════════════════════
-#  MOTEUR YAKPRO-PO  (subprocess PHP)
+#  YAKPRO-PO ENGINE (PHP subprocess)
 # ═══════════════════════════════════════════════════════════════════════════════
 def _yakpro_obfuscate_file(input_file, output_file, cnf_path, yakpro_path):
-    """Lance yakpro-po sur un fichier et écrit le résultat dans output_file."""
+    """Runs yakpro-po on a file and writes the result to output_file."""
     cmd = [
         'php', yakpro_path,
         '--config-file', cnf_path,
@@ -256,7 +256,7 @@ def _yakpro_obfuscate_file(input_file, output_file, cnf_path, yakpro_path):
         return False, str(e)
 
 # ═══════════════════════════════════════════════════════════════════════════════
-#  MOTEUR PYTHON NATIF (fallback — aucun PHP requis)
+#  NATIVE PYTHON ENGINE (fallback — no PHP required)
 # ═══════════════════════════════════════════════════════════════════════════════
 def _rand_var(length=8):
     first = random.choice(string.ascii_letters)
@@ -371,19 +371,19 @@ def _native_obfuscate(code, level):
     return code
 
 # ═══════════════════════════════════════════════════════════════════════════════
-#  OBFUSCATION D'UN FICHIER (yakpro ou fallback natif)
+#  FILE OBFUSCATION (yakpro or native fallback)
 # ═══════════════════════════════════════════════════════════════════════════════
 def obfuscate_one(input_file, output_dir, level, create_backup,
                   use_yakpro=False, yakpro_path=None, cnf_path=None):
     if not os.path.isfile(input_file):
-        print(f'{ts()} {ERROR} Fichier introuvable : {white}{input_file}{reset}')
+        print(f'{ts()} {ERROR} File not found: {white}{input_file}{reset}')
         logging.error(f'File not found: {input_file}')
         return False
 
     if create_backup:
         backup = f'{os.path.splitext(input_file)[0]}_backup.php'
         shutil.copy2(input_file, backup)
-        print(f'{ts()} {INFO} Backup : {white}{backup}{reset}')
+        print(f'{ts()} {INFO} Backup: {white}{backup}{reset}')
         logging.info(f'Backup: {backup}')
 
     os.makedirs(output_dir, exist_ok=True)
@@ -393,7 +393,7 @@ def obfuscate_one(input_file, output_dir, level, create_backup,
         if use_yakpro and yakpro_path and cnf_path:
             ok, err = _yakpro_obfuscate_file(input_file, out_path, cnf_path, yakpro_path)
             if not ok:
-                print(f'{ts()} {ERROR} YakPro : {white}{err}{reset}')
+                print(f'{ts()} {ERROR} YakPro: {white}{err}{reset}')
                 logging.error(f'YakPro error on {input_file}: {err}')
                 return False
         else:
@@ -402,11 +402,11 @@ def obfuscate_one(input_file, output_dir, level, create_backup,
             with open(out_path, 'w', encoding='utf-8') as f:
                 f.write(_native_obfuscate(code, level))
 
-        print(f'{ts()} {ADD} Obfusque -> {white}{out_path}{reset}')
+        print(f'{ts()} {ADD} Obfuscated -> {white}{out_path}{reset}')
         logging.info(f'Obfuscated: {out_path}')
         return True
     except Exception as e:
-        print(f'{ts()} {ERROR} Erreur : {white}{e}{reset}')
+        print(f'{ts()} {ERROR} Error: {white}{e}{reset}')
         logging.error(f'Error: {e}')
         return False
 
@@ -424,20 +424,20 @@ def process_directory(directory, output_dir, level, exclude_list, create_backup,
             target = os.path.join(output_dir, rel)
             file_list.append((fpath, target, level, create_backup, use_yakpro, yakpro_path, cnf_path))
     if not file_list:
-        print(f'{ts()} {ERROR} Aucun .php trouve dans : {white}{directory}{reset}')
+        print(f'{ts()} {ERROR} No .php found in: {white}{directory}{reset}')
         return
     total = len(file_list)
-    print(f'{ts()} {INFO} {total} fichier(s) PHP trouve(s). Obfuscation en cours...')
+    print(f'{ts()} {INFO} {total} PHP file(s) found. Obfuscating...')
     with ThreadPoolExecutor(max_workers=max_workers) as ex:
         results = list(ex.map(lambda a: obfuscate_one(*a), file_list))
     done = sum(1 for r in results if r)
-    print(f'{ts()} {ADD} {done}/{total} fichier(s) obfusque(s).')
+    print(f'{ts()} {ADD} {done}/{total} file(s) obfuscated.')
 
 # ═══════════════════════════════════════════════════════════════════════════════
-#  BANNIERE
+#  BANNER
 # ═══════════════════════════════════════════════════════════════════════════════
 def show_banner(use_yakpro):
-    engine = f'{red}YakPro-Po{white}' if use_yakpro else f'{red}Python Natif{white}'
+    engine = f'{red}YakPro-Po{white}' if use_yakpro else f'{red}Native Python{white}'
     print(f'''{red}
 
                         ██████╗ ██╗  ██╗██████╗      ██████╗ ██████╗ ███████╗██╗   ██╗███████╗ ██████╗
@@ -447,7 +447,7 @@ def show_banner(use_yakpro):
                         ██║     ██║  ██║██║         ╚██████╔╝██████╔╝██║     ╚██████╔╝███████║╚██████╗
                         ╚═╝     ╚═╝  ╚═╝╚═╝          ╚═════╝ ╚═════╝ ╚═╝      ╚═════╝ ╚══════╝ ╚═════╝
 
-                {white}                    PHP Obfuscator — Moteur : {engine}
+                {white}                    PHP Obfuscator — Engine: {engine}
 
                                         ╔════════════════════════════╗
                                         ║    {red}PHP Obfuscator Tool{white}     ║
@@ -458,10 +458,10 @@ def show_banner(use_yakpro):
 ''')
 
 # ═══════════════════════════════════════════════════════════════════════════════
-#  MENU PRINCIPAL
+#  MAIN MENU
 # ═══════════════════════════════════════════════════════════════════════════════
 def Zeta_PHP_Obfuscator():
-    # ── Détection moteur ──────────────────────────────────────────────────
+    # ── Engine detection ──────────────────────────────────────────────────
     php_ok    = _check_php()
     yakpro_ok = _check_yakpro(YAKPRO_PHP)
     use_yakpro = php_ok and yakpro_ok
@@ -471,74 +471,74 @@ def Zeta_PHP_Obfuscator():
     show_banner(use_yakpro)
 
     if use_yakpro:
-        print(f'{ts()} {ADD} Moteur : {white}yakpro-po (PHP){reset} detecte -> {white}{YAKPRO_PHP}{reset}')
+        print(f'{ts()} {ADD} Engine: {white}yakpro-po (PHP){reset} detected -> {white}{YAKPRO_PHP}{reset}')
     else:
         if not php_ok:
-            print(f'{ts()} {INFO} PHP non detecte — moteur Python natif utilise.')
+            print(f'{ts()} {INFO} PHP not detected — native Python engine used.')
         elif not yakpro_ok:
-            print(f'{ts()} {INFO} yakpro-po.php absent — moteur Python natif utilise.')
-            print(f'{ts()} {INFO} Pour activer YakPro : assurez-vous que {white}yakpro-po/yakpro-po.php{reset} existe.')
+            print(f'{ts()} {INFO} yakpro-po.php missing — native Python engine used.')
+            print(f'{ts()} {INFO} To enable YakPro: explicitly make sure {white}yakpro-po/yakpro-po.php{reset} exists.')
 
     # ── Mode ───────────────────────────────────────────────────────────────
     print(f'''
-    {red}[{white}1{red}] {white}Fichier unique
-    {red}[{white}2{red}] {white}Plusieurs fichiers
-    {red}[{white}3{red}] {white}Dossier de projet entier
+    {red}[{white}1{red}] {white}Single file
+    {red}[{white}2{red}] {white}Multiple files
+    {red}[{white}3{red}] {white}Entire project folder
     ''')
     try:
         mode = int(input(f'{ts()} {INPUT} Mode (1/2/3) -> {reset}'))
     except (ValueError, KeyboardInterrupt):
-        print(f'\n{ts()} {ERROR} Entree invalide.')
+        print(f'\n{ts()} {ERROR} Invalid input.')
         return
     if mode not in (1, 2, 3):
-        print(f'{ts()} {ERROR} Choisissez 1, 2 ou 3.')
+        print(f'{ts()} {ERROR} Choose 1, 2 or 3.')
         return
 
-    # ── Niveau ─────────────────────────────────────────────────────────────
+    # ── Level ─────────────────────────────────────────────────────────────
     if use_yakpro:
         print(f'''
-    {red}[{white}1{red}] {white}Faible     — Compactage / strip commentaires
-    {red}[{white}2{red}] {white}Moyen      — + Strings + Variables
-    {red}[{white}3{red}] {white}Fort       — + Fonctions + Constantes
-    {red}[{white}4{red}] {white}Tres Fort  — + Classes, Methodes, Proprietes, Namespaces
+    {red}[{white}1{red}] {white}Low        — Compacting / strip comments
+    {red}[{white}2{red}] {white}Medium     — + Strings + Variables
+    {red}[{white}3{red}] {white}High       — + Functions + Constants
+    {red}[{white}4{red}] {white}Very High  — + Classes, Methods, Properties, Namespaces
     {red}[{white}5{red}] {white}Extreme    — + If/Loop obfuscation + Shuffle statements
         ''')
     else:
         print(f'''
-    {red}[{white}1{red}] {white}Faible     — Strip commentaires + compactage
-    {red}[{white}2{red}] {white}Moyen      — + Encodage strings octal
-    {red}[{white}3{red}] {white}Fort       — + Encodage strings hex + renommage variables
-    {red}[{white}4{red}] {white}Tres Fort  — + Double passe renommage
-    {red}[{white}5{red}] {white}Extreme    — + Wrapper base64/eval
+    {red}[{white}1{red}] {white}Low        — Strip comments + compacting
+    {red}[{white}2{red}] {white}Medium     — + Octal string encoding
+    {red}[{white}3{red}] {white}High       — + Hex string encoding + variable renaming
+    {red}[{white}4{red}] {white}Very High  — + Double pass renaming
+    {red}[{white}5{red}] {white}Extreme    — + base64/eval wrapper
         ''')
     try:
-        level = int(input(f'{ts()} {INPUT} Niveau d\'obfuscation (1-5) -> {reset}'))
+        level = int(input(f'{ts()} {INPUT} Obfuscation level (1-5) -> {reset}'))
     except (ValueError, KeyboardInterrupt):
-        print(f'\n{ts()} {ERROR} Entree invalide.')
+        print(f'\n{ts()} {ERROR} Invalid input.')
         return
     if level not in (1, 2, 3, 4, 5):
-        print(f'{ts()} {ERROR} Choisissez 1 a 5.')
+        print(f'{ts()} {ERROR} Choose 1 to 5.')
         return
 
     # ── Backup ─────────────────────────────────────────────────────────────
     create_backup = False
     try:
-        bk = input(f'{ts()} {INPUT} Creer des backups ? (o/n) -> {reset}').strip().lower()
-        create_backup = bk in ('o', 'y', 'oui', 'yes')
+        bk = input(f'{ts()} {INPUT} Create backups? (y/n) -> {reset}').strip().lower()
+        create_backup = bk in ('y', 'yes')
     except KeyboardInterrupt:
         print()
         return
 
-    # ── Dossier de sortie ──────────────────────────────────────────────────
+    # ── Output folder ──────────────────────────────────────────────────
     out_default = os.path.join(_BASE_DIR, output_folder)
     try:
-        custom  = input(f'{ts()} {INPUT} Dossier de sortie [{white}{out_default}{red}] (ENTREE=defaut) -> {reset}').strip()
+        custom  = input(f'{ts()} {INPUT} Output folder [{white}{out_default}{red}] (ENTER=default) -> {reset}').strip()
         out_dir = custom if custom else out_default
     except KeyboardInterrupt:
         print()
         return
 
-    # ── CNF temporaire pour yakpro ─────────────────────────────────────────
+    # ── Temporary CNF for yakpro ─────────────────────────────────────────
     cnf_tmp = None
     if use_yakpro:
         cnf_tmp = os.path.join(_BASE_DIR, 'yakpro-po', f'_zeta_level{level}.cnf')
@@ -548,7 +548,7 @@ def Zeta_PHP_Obfuscator():
     exclude_list = []
     if mode == 3:
         try:
-            ex_raw = input(f'{ts()} {INPUT} Chemins a exclure (espace=sep, ENTREE=passer) -> {reset}').strip()
+            ex_raw = input(f'{ts()} {INPUT} Paths to exclude (space=sep, ENTER=skip) -> {reset}').strip()
             exclude_list = [os.path.abspath(e) for e in ex_raw.split() if e]
         except KeyboardInterrupt:
             print()
@@ -558,55 +558,55 @@ def Zeta_PHP_Obfuscator():
     if mode == 1:
         files = ChoosePHPFiles()
         if not files:
-            print(f'{ts()} {ERROR} Aucun fichier selectionne.')
+            print(f'{ts()} {ERROR} No file selected.')
             return
         fp = files[0]
         if not fp.lower().endswith('.php'):
-            print(f'{ts()} {ERROR} Pas un .php : {white}{fp}{reset}')
+            print(f'{ts()} {ERROR} Not a .php: {white}{fp}{reset}')
             return
-        print(f'{ts()} {WAIT} Obfuscation : {white}{os.path.basename(fp)}{reset}..')
+        print(f'{ts()} {WAIT} Obfuscating: {white}{os.path.basename(fp)}{reset}..')
         obfuscate_one(fp, out_dir, level, create_backup, use_yakpro, YAKPRO_PHP, cnf_tmp)
 
     elif mode == 2:
         files = ChoosePHPFiles()
         if not files:
-            print(f'{ts()} {ERROR} Aucun fichier selectionne.')
+            print(f'{ts()} {ERROR} No file selected.')
             return
-        print(f'{ts()} {WAIT} Obfuscation de {len(files)} fichier(s)..')
+        print(f'{ts()} {WAIT} Obfuscating {len(files)} file(s)..')
         ok = sum(
             obfuscate_one(fp, out_dir, level, create_backup, use_yakpro, YAKPRO_PHP, cnf_tmp)
             for fp in files if fp.lower().endswith('.php')
         )
-        print(f'{ts()} {ADD} {ok}/{len(files)} fichier(s) obfusque(s).')
+        print(f'{ts()} {ADD} {ok}/{len(files)} file(s) obfuscated.')
 
     else:
         directory = ChoosePHPDirectory()
         if not directory or not os.path.isdir(directory):
-            print(f'{ts()} {ERROR} Dossier invalide.')
+            print(f'{ts()} {ERROR} Invalid folder.')
             return
-        print(f'{ts()} {WAIT} Scan du dossier..')
+        print(f'{ts()} {WAIT} Scanning folder..')
         process_directory(directory, out_dir, level, exclude_list, create_backup,
                           use_yakpro, YAKPRO_PHP, cnf_tmp)
 
-    # Nettoyage CNF temporaire
+    # Temporary CNF cleanup
     if cnf_tmp and os.path.isfile(cnf_tmp):
         try:
             os.remove(cnf_tmp)
         except Exception:
             pass
 
-    print(f'{ts()} {INFO} Sortie : {white}{out_dir}{reset}')
-    print(f'{ts()} {INFO} Log    : {white}{log_filename}{reset}')
+    print(f'{ts()} {INFO} Output: {white}{out_dir}{reset}')
+    print(f'{ts()} {INFO} Log   : {white}{log_filename}{reset}')
 
 # ═══════════════════════════════════════════════════════════════════════════════
-#  POINT D'ENTREE
+#  ENTRY POINT
 # ═══════════════════════════════════════════════════════════════════════════════
 if __name__ == '__main__':
     try:
         while True:
             Zeta_PHP_Obfuscator()
             try:
-                input(f'{BEFORE + current_time_hour() + AFTER} {INPUT} Appuyez sur ENTREE pour continuer.. ')
+                input(f'{BEFORE + current_time_hour() + AFTER} {INPUT} Press ENTER to continue.. ')
             except KeyboardInterrupt:
                 print()
                 break
