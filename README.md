@@ -147,4 +147,4 @@ MIT License — Free to use and modify.
 
 ---
 
-*Zeta - PHP Obfuscator Tool by [BenzoXdev](https://github.com/BenzoXdev)*
+*PHP Obfusc Tool by [BenzoXdev](https://github.com/BenzoXdev)*
